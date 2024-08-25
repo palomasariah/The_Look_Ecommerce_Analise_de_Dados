@@ -97,7 +97,7 @@ GROUP BY mes
 ORDER BY volume_vendas, mes
 ```
 
-### Desempenho de Vendas
+### Análise de Clientes:
 
 
 **Query 5:** Quantos clientes únicos realizaram compras nos últimos 12 meses?
