@@ -301,8 +301,16 @@ GROUP BY u.country
 ORDER BY 2 DESC;
 ```
 
-**Query 12:** Qual é a receita gerada por país?
-
+#### **Query 12:** Qual é a receita gerada por país?
+*Solução:*
+  - Seleciona o país (country) dos usuários.
+  - Calcula a soma dos preços de venda (SUM(o.sale_price)) e arredonda para duas casas decimais, nomeando como valor_vendido.
+  - Realiza um JOIN entre as tabelas users (usuários) e order_items (itens de pedido) com base no campo user_id.
+  - Filtra os pedidos onde o status é ‘Complete’.
+  - Filtra os pedidos criados entre ‘2023-08-01’ e ‘2024-08-01’.
+  - Agrupa os resultados por país (country).
+  - Ordena os resultados pelo valor vendido (valor_vendido) em ordem decrescente.
+  
 ```sql
 SELECT u.country, ROUND(SUM(o.sale_price), 2) AS valor_vendido
 
@@ -321,8 +329,15 @@ ORDER BY 2 DESC;
 ### Análise de Categorias:
 
 
-**Query 13:** Qual é a distribuição de vendas por categoria de produto?
-
+#### **Query 13:** Qual é a distribuição de vendas por categoria de produto?
+*Solução:*
+  - Seleciona a categoria (category) dos produtos.
+  - Conta o número de pedidos (COUNT(*)) e nomeia como vendas.
+  - Realiza um JOIN entre as tabelas products (produtos) e order_items (itens de pedido) com base no campo product_id.
+  - Filtra os pedidos onde o status é ‘Complete’.
+  - Agrupa os resultados por categoria (category).
+  - Ordena os resultados pelo número de vendas (vendas) em ordem decrescente.
+  
 ```sql
 SELECT p.category, COUNT(*) as vendas
 
@@ -336,7 +351,15 @@ GROUP BY p.category
 ORDER BY 2 DESC;
 ```
 
-**Query 14:** Quais categorias de produtos têm o melhor desempenho em termos de receita?
+#### **Query 14:** Quais categorias de produtos têm o melhor desempenho em termos de receita?
+*Solução:*
+  - Seleciona a categoria (category) dos produtos e renomeia como categoria.
+  - Calcula a soma dos preços de venda (SUM(o.sale_price)) e arredonda para três casas decimais, nomeando como valor_vendas.
+  - Realiza um JOIN entre as tabelas products (produtos) e order_items (itens de pedido) com base no campo product_id.
+  - Filtra os pedidos onde o status é ‘Complete’.
+  - Agrupa os resultados por categoria (category).
+  - Ordena os resultados pelo valor das vendas (valor_vendas) em ordem decrescente.
+  - Limita os resultados aos 5 primeiros registros.
 
 ```sql
 SELECT
