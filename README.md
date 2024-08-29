@@ -2,7 +2,7 @@
 
 
 ### Objetivo do projeto:
-Este projeto visa analisar o comportamento de compras dos clientes do e-commerce The Look, identificar tendências de vendas e fornecer insights acionáveis para a tomada de decisões estratégicas.
+Este projeto visa analisar o comportamento de compras dos clientes do e-commerce The Look, identificar tendências de vendas e fornecer insights para a tomada de decisões estratégicas.
 
 
 ### Fonte dos Dados
@@ -24,8 +24,17 @@ Para ver o dataset, [clique aqui](https://console.cloud.google.com/bigquery?ws=!
 
 ### Desempenho de Vendas:
 
-**Query 1:** Qual é a receita total gerada nos últimos 12 meses?
-  
+#### **Query 1:** Qual é a receita total gerada nos últimos 12 meses?
+*Solução:*
+1. Subquery:
+  - Seleciona a soma dos preços de venda (sale_price) de todos os itens de pedido da tabela order_items.
+  - Filtra os itens de pedido onde o status é ‘Complete’ e a data de criação (created_at) está entre ‘2023-08-01’ e ‘2024-08-01’.
+  - Calcula a soma total desses preços de venda e a nomeia como total_ano.
+2. Query Externa:
+  - Soma os valores de total_ano obtidos da subquery interna.
+  - Arredonda o resultado para duas casas decimais.
+  - Nomeia o resultado final como receita_ano.
+
   ```sql
   SELECT ROUND(SUM(total_ano), 2) AS receita_ano
     FROM (
@@ -41,7 +50,17 @@ Para ver o dataset, [clique aqui](https://console.cloud.google.com/bigquery?ws=!
   ```
 
 
-**Query 2:** Qual é a média mensal de vendas?
+#### **Query 2:** Qual é a média mensal de vendas?
+*Solução:*
+1. Subquery:
+  - Extrai o ano e o mês da data de criação (created_at) de cada item de pedido.
+  - Calcula a soma dos preços de venda (sale_price) para cada mês e ano, arredondando o valor para três casas decimais, e nomeia como vendas_mes.
+  - Agrupa os resultados por mês e ano.
+  - Ordena os resultados por mês e ano.
+2. Query Externa:
+  - Calcula a média dos valores mensais de vendas (vendas_mes) obtidos da subquery interna.
+  - Arredonda o resultado para duas casas decimais.
+  - Nomeia o resultado final como media_vendas_mes.
   
   ```sql
   SELECT ROUND (avg(vendas_mes),2) as media_vendas_mes
@@ -62,7 +81,18 @@ Para ver o dataset, [clique aqui](https://console.cloud.google.com/bigquery?ws=!
     );
   ```
   
-**Query 3:** Quais são os meses com o maior e o menor faturamento?
+#### **Query 3:** Quais são os meses com o maior e o menor faturamento?
+*Solução:*
+1. Subquery:
+  - Extrai o mês da data de criação (created_at) de cada item de pedido.
+  - Calcula a soma dos preços de venda (sale_price) para cada mês, arredondando o valor para três casas decimais, e nomeia como vendas_mes.
+  - Agrupa os resultados por mês.
+2. Query Externa:
+  - Agrupa os resultados da subquery interna por mês.
+  - Calcula o valor máximo das vendas mensais (vendas_mes) para cada mês.
+  - Arredonda o valor máximo para duas casas decimais.
+  - Nomeia o resultado final como maior_venda.
+  - Ordena os resultados pela maior venda em ordem decrescente
 
 ```sql
 SELECT ROUND (max(vendas_mes),2) as maior_venda,
@@ -85,7 +115,13 @@ ORDER BY maior_venda DESC;
 ```
   
 
-**Query 4:** Quais são os meses com o maior e o menor volume de vendas?
+#### **Query 4:** Quais são os meses com o maior e o menor volume de vendas?
+*Solução:*
+  - Extrai o mês da data de criação (created_at) de cada pedido.
+  - Conta o número de pedidos (order_id) para cada mês e nomeia como volume_vendas.
+  - Filtra os pedidos onde o status é ‘Complete’ e a data de criação está entre ‘2023-01-01’ e ‘2023-12-31’.
+  - Agrupa os resultados por mês.
+  - Ordena os resultados pelo volume de vendas (volume_vendas) e, em seguida, pelo mês (mes).
 
 ```sql
 SELECT
@@ -102,7 +138,11 @@ ORDER BY volume_vendas, mes;
 
 ### Análise de Clientes:
 
-**Query 5:** Quantos clientes únicos realizaram compras nos últimos 12 meses?
+#### **Query 5:** Quantos clientes únicos realizaram compras nos últimos 12 meses?
+*Solução:*
+  - Conta o número de clientes distintos (u.id) e nomeia como total_clientes.
+  - Realiza um JOIN entre as tabelas orders (pedidos) e users (usuários) com base no campo user_id.
+  - Filtra os pedidos onde o status é ‘Complete’ e a data de criação está entre ‘2023-08-01’ e ‘2024-08-01’.
 
 ```sql
 SELECT COUNT(DISTINCT u.id) AS total_clientes
@@ -115,8 +155,17 @@ WHERE o.status = 'Complete'
   AND o.created_at BETWEEN '2023-08-01' AND '2024-08-01';
 ```
 
-**Query 6:** Qual é o valor médio gasto por cliente?
-
+#### **Query 6:** Qual é o valor médio gasto por cliente?
+*Solução:*
+1. Subquery:
+  - Seleciona o user_id de cada cliente.
+  - Calcula a soma dos preços de venda (sale_price) para cada cliente e nomeia como gasto_cliente.
+  - Filtra os itens de pedido onde o status é ‘Complete’.
+  - Agrupa os resultados por user_id.
+2. Query Externa:
+  - Calcula a média dos gastos dos clientes (gasto_cliente) obtidos da subquery interna.
+  - Arredonda o resultado para duas casas decimais.
+  - Nomeia o resultado final como gasto_medio_cliente.
 
 ```sql
 SELECT ROUND(AVG(gasto_cliente), 2) AS gasto_medio_cliente
