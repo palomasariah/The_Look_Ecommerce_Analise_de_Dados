@@ -182,7 +182,16 @@ FROM (
 );
 ```
 
-**Query 7:** Qual é a taxa de retorno de clientes (quantos clientes voltaram para fazer uma segunda compra)?
+#### **Query 7:** Qual é a taxa de retorno de clientes (quantos clientes voltaram para fazer uma segunda compra)?
+*Solução:*
+1. Subquery:
+  - Seleciona o user_id de cada cliente.
+  - Filtra os clientes que têm mais de uma data de criação distinta (created_at) para pedidos com status ‘Complete’.
+  - Agrupa os resultados por user_id.
+Filtra os grupos que têm mais de uma data distinta de criação de pedidos.
+2. Query Externa:
+  - Conta o número de clientes distintos (user_id) que atendem aos critérios da subquery interna.
+  - Nomeia o resultado final como total_clientes.
 
 ```sql
 SELECT COUNT(DISTINCT user_id) AS total_clientes
@@ -199,8 +208,16 @@ WHERE user_id IN (
 
 ### Análise de Produtos:
 
-**Query 8:** Quais são os produtos mais vendidos?
-
+#### **Query 8:** Quais são os produtos mais vendidos?
+*Solução:*
+  - Conta o número total de vendas (COUNT(*)) e nomeia como vendas.
+  - Seleciona o product_id e o name do produto.
+  - Realiza um JOIN entre as tabelas order_items (itens de pedido) e products (produtos) com base no campo product_id.
+  - Filtra os itens de pedido onde o status é ‘Complete’.
+  - Agrupa os resultados por product_id e name.
+  - Ordena os resultados pelo número de vendas (vendas) em ordem decrescente.
+  - Limita os resultados aos 5 produtos mais vendidos.
+  
 ```sql
 SELECT COUNT(*) AS vendas,
   o.product_id,
@@ -214,8 +231,16 @@ ORDER BY vendas DESC
 LIMIT 5;
 ```
 
-**Query 9:** Quais produtos geraram a maior receita?
-
+#### **Query 9:** Quais produtos geraram a maior receita?
+*Solução:*
+- Calcula a soma dos preços de venda (sale_price) e arredonda o valor para duas casas decimais, nomeando como valor_vendido.
+- Seleciona o product_id e o name do produto.
+- Realiza um JOIN entre as tabelas order_items (itens de pedido) e products (produtos) com base no campo product_id.
+- Filtra os itens de pedido onde o status é ‘Complete’.
+- Agrupa os resultados por product_id e name.
+- Ordena os resultados pelo valor vendido (valor_vendido) em ordem decrescente.
+- Limita os resultados aos 5 produtos com maior valor vendido.
+  
 ```sql
 SELECT ROUND(SUM(o.sale_price), 2) AS valor_vendido,
   o.product_id,
@@ -232,7 +257,13 @@ LIMIT 5;
 
 ### Análise de Campanhas:
 
-**Query 10:** Qual campanha teve o melhor desempenho em termos de aumento de vendas?
+#### **Query 10:** Qual campanha teve o melhor desempenho em termos de aumento de vendas?
+*Solução:*
+  - Seleciona o tipo de evento (event_type) e a fonte de tráfego (traffic_source).
+  - Conta o número de eventos (COUNT(*)) e nomeia como vendas.
+  - Filtra os eventos onde o tipo de evento é ‘purchase’ (compra).
+  - Agrupa os resultados por traffic_source e event_type.
+  - Ordena os resultados pelo número de vendas (vendas) em ordem decrescente.
 
 ```sql
 SELECT event_type, traffic_source, COUNT(*) as vendas
@@ -248,7 +279,14 @@ ORDER BY 3 DESC;
 
 ### Análise Geográfica:
 
-**Query 11:** Quais são os países com maior número de compras?
+#### **Query 11:** Quais são os países com maior número de compras?
+*Solução:*
+  - Seleciona o país (country) dos usuários.
+  - Conta o número de pedidos (COUNT(*)) e nomeia como vendas.
+  - Realiza um JOIN entre as tabelas users (usuários) e orders (pedidos) com base no campo user_id.
+  - Filtra os pedidos onde o status é ‘Complete’.
+  - Agrupa os resultados por país (country).
+  - Ordena os resultados pelo número de vendas (vendas) em ordem decrescente.
 
 ```sql
 SELECT u.country, COUNT(*) as vendas
