@@ -19,12 +19,13 @@ O dataset completo é composto por 7 tabelas. Neste projeto foram usadas as 5 ta
     
 Para ver o dataset, [clique aqui](https://console.cloud.google.com/bigquery?ws=!1m4!1m3!3m2!1sbigquery-public-data!2sthelook_ecommerce).
 
+
 ## Perguntas a serem Respondidas
 
 
 ### Desempenho de Vendas:
 
-#### **Query 1:** Qual é a receita total gerada nos últimos 12 meses?
+#### ⚪ **Query 1:** Qual é a receita total gerada nos últimos 12 meses?
 *Solução:*
 1. Subquery:
   - Seleciona a soma dos preços de venda (sale_price) de todos os itens de pedido da tabela order_items.
@@ -49,8 +50,17 @@ Para ver o dataset, [clique aqui](https://console.cloud.google.com/bigquery?ws=!
     );
   ```
 
+#### *Resultado:*
+receita_ano |
+-- |
+925096.45 |
 
-#### **Query 2:** Qual é a média mensal de vendas?
+#### *Insights:*
+  - The Look Ecommerce apresentou um crescimento de aproximadamente 72.5% na receita em relação ao mesmo período no ano anterior.
+
+
+
+#### ⚪ **Query 2:** Qual é a média mensal de vendas?
 *Solução:*
 1. Subquery:
   - Extrai o ano e o mês da data de criação (created_at) de cada item de pedido.
@@ -80,8 +90,18 @@ Para ver o dataset, [clique aqui](https://console.cloud.google.com/bigquery?ws=!
 
     );
   ```
+
+#### *Resultado:*
+media_vendas_mes |
+-- |
+55055.04 |
+
+#### *Insights:*
+   - A média de vendas mensais para o e-commerce The Look é de $55,055.04.
+
+
   
-#### **Query 3:** Quais são os meses com o maior e o menor faturamento?
+#### ⚪ **Query 3:** Quais são os meses com o maior e o menor faturamento?
 *Solução:*
 1. Subquery:
   - Extrai o mês da data de criação (created_at) de cada item de pedido.
@@ -113,9 +133,31 @@ SELECT ROUND (max(vendas_mes),2) as maior_venda,
 GROUP BY mes
 ORDER BY maior_venda DESC;
 ```
-  
 
-#### **Query 4:** Quais são os meses com o maior e o menor volume de vendas?
+#### *Resultado:*
+maior_venda |	mes
+-- | --
+76899.95	| 12
+64801.61	| 10
+60702.1 |	11
+60316.39 |	7
+58445.66	| 9
+57771.37	| 8
+55083.71	| 6
+48748.75	| 5
+47046.82	| 3
+46005.18	| 4
+45833.3 |	2
+39005.59 |	1
+
+#### *Insights:*
+  - Os melhores 3 meses, em termos de vendas, foram os meses de dezembro, com $76,899.95, seguido por outubro ($64,801.61) e novembro ($60,702.10).
+  - No ultimo trimestre do ano (outubro, novembro e dezembro) o faturamento é superior.
+  - Janeiro é o mês com a menor venda, com $39,005.59.
+
+
+
+#### ⚪ **Query 4:** Quais são os meses com o maior e o menor volume de vendas?
 *Solução:*
   - Extrai o mês da data de criação (created_at) de cada pedido.
   - Conta o número de pedidos (order_id) para cada mês e nomeia como volume_vendas.
@@ -135,10 +177,30 @@ GROUP BY mes
 ORDER BY volume_vendas, mes;
 ```
 
+#### *Resultado:*
+mes |	volume_vendas
+-- | --
+1	| 479
+2 |	507
+4 |	535
+5	| 568
+6	| 573
+3	| 579
+9 |	643
+7	| 651
+8	| 651
+11	| 721
+10	| 746
+12	| 818
+
+#### *Insights:*
+  - Em conformidade com a análise anterior (referente ao faturamento), dezembro também teve o maior volume de vendas, com 818 unidades, e janeiro teve o menor volume de vendas, com 479 unidades.
+
+
 
 ### Análise de Clientes:
 
-#### **Query 5:** Quantos clientes únicos realizaram compras nos últimos 12 meses?
+#### ⚪ **Query 5:** Quantos clientes únicos realizaram compras nos últimos 12 meses?
 *Solução:*
   - Conta o número de clientes distintos (u.id) e nomeia como total_clientes.
   - Realiza um JOIN entre as tabelas orders (pedidos) e users (usuários) com base no campo user_id.
@@ -155,7 +217,16 @@ WHERE o.status = 'Complete'
   AND o.created_at BETWEEN '2023-08-01' AND '2024-08-01';
 ```
 
-#### **Query 6:** Qual é o valor médio gasto por cliente?
+#### *Resultado:*
+total_clientes |
+-- |
+9945 |
+
+#### *Insights:*
+  - Houve um crescimento de aproximadamente 68.05% no número de clientes em relação ao mesmo perído do ano anterior.
+
+
+#### ⚪ **Query 6:** Qual é o valor médio gasto por cliente?
 *Solução:*
 1. Subquery:
   - Seleciona o user_id de cada cliente.
@@ -182,7 +253,17 @@ FROM (
 );
 ```
 
-#### **Query 7:** Qual é a taxa de retorno de clientes (quantos clientes voltaram para fazer uma segunda compra)?
+#### *Resultado:*
+gasto_medio_cliente |
+-- |
+99.61 |
+
+#### *Insights:*
+  - Cada cliente gastou, em média, $99.61 no ecommerce The Look.
+
+
+
+#### ⚪ **Query 7:** Qual é a taxa de retorno de clientes (quantos clientes voltaram para fazer uma segunda compra)?
 *Solução:*
 1. Subquery:
   - Seleciona o user_id de cada cliente.
@@ -205,10 +286,19 @@ WHERE user_id IN (
 );
 ```
 
+#### *Resultado:*
+total_clientes |
+-- |
+3342 |
+
+#### *Insights:*
+  - 3342 clientes fizeram mais de uma compra.
+  - Aproximadamente um terço dos clientes está satisfeito e voltando para fazer mais compras no The Look.
+
 
 ### Análise de Produtos:
 
-#### **Query 8:** Quais são os produtos mais vendidos?
+#### ⚪ **Query 8:** Quais são os produtos mais vendidos?
 *Solução:*
   - Conta o número total de vendas (COUNT(*)) e nomeia como vendas.
   - Seleciona o product_id e o name do produto.
@@ -231,7 +321,20 @@ ORDER BY vendas DESC
 LIMIT 5;
 ```
 
-#### **Query 9:** Quais produtos geraram a maior receita?
+#### *Resultado:*
+vendas | product_id	| name
+-- | -- | --
+8	| 20753 |	Cinch Jeans Mens Carter Medium Stone
+8	| 12370	| Bra Garter Thong Set
+8	| 16064	| VOLCOM Think Mens Thermal
+8	| 4368	| Silver Jeans Juniors Frances 18 Bootcut Jean
+8	| 18391	| PUMA Men's Knitted Tricot Jacket
+
+#### *Insights:*
+  - Os produtos mais vendidos são itens de vestuário variados, desde jeans e jaquetas até conjuntos de lingerie.
+
+
+#### ⚪ **Query 9:** Quais produtos geraram a maior receita?
 *Solução:*
 - Calcula a soma dos preços de venda (sale_price) e arredonda o valor para duas casas decimais, nomeando como valor_vendido.
 - Seleciona o product_id e o name do produto.
@@ -254,10 +357,24 @@ ORDER BY valor_vendido DESC
 LIMIT 5;
 ```
 
+#### *Resultado:*
+valor_vendido |	product_id	| name
+-- | -- | --
+3612.0	| 2793	| adidas Women's adiFIT Slim Pant
+3612.0	| 2796	| ASCIS Cushion Low Socks (Pack of 3)
+3612.0	| 8429	| The North Face Women's S-XL Oso Jacket
+3000.0	| 8319	| Canada Goose Women's Mystique
+2997.0	| 23546	| Alpha Industries Rip Stop Short
+
+#### *Insights:*
+  - Produtos das marcas Adidas, ASCIS e The North Face geraram a maior receita.
+  - Os produtos mais vendidos não necessariamente geraram a maior receita. A lista de produtos mais vendidos inclui uma variedade de itens de vestuário, enquanto os produtos de maior receita incluem itens de marcas premium, sugerindo que produtos de alta qualidade e preço mais elevado contribuem significativamente para a receita total.
+
+
 
 ### Análise de Campanhas:
 
-#### **Query 10:** Qual campanha teve o melhor desempenho em termos de aumento de vendas?
+#### ⚪ **Query 10:** Qual campanha teve o melhor desempenho em termos de aumento de vendas?
 *Solução:*
   - Seleciona o tipo de evento (event_type) e a fonte de tráfego (traffic_source).
   - Conta o número de eventos (COUNT(*)) e nomeia como vendas.
@@ -276,10 +393,24 @@ GROUP BY traffic_source, event_type
 ORDER BY 3 DESC;
 ```
 
+#### *Resultado:*
+event_type	| traffic_source	| vendas
+-- | -- | --
+purchase	| Email	| 82517
+purchase	| Adwords	| 54747
+purchase	| YouTube	| 18301
+purchase	| Facebook	| 18266
+purchase	| Organic	| 9074
+
+#### *Insights:*
+  - A campanha de Email foi a mais eficaz, gerando o maior número de vendas. Dado o sucesso, é válido para o The Look investir mais recursos em campanhas de email marketing.
+  - As campanhas de Facebook e com tráfego orgânico tiveram o menor desempenho em termos de vendas.
+
+
 
 ### Análise Geográfica:
 
-#### **Query 11:** Quais são os países com maior número de compras?
+#### ⚪ **Query 11:** Quais são os países com maior número de compras?
 *Solução:*
   - Seleciona o país (country) dos usuários.
   - Conta o número de pedidos (COUNT(*)) e nomeia como vendas.
@@ -301,7 +432,30 @@ GROUP BY u.country
 ORDER BY 2 DESC;
 ```
 
-#### **Query 12:** Qual é a receita gerada por país?
+#### *Resultados:*
+country	| vendas
+-- | --
+China	| 10664
+United States	| 7248
+Brasil	| 4529
+South Korea	| 1679
+France	| 1487
+United Kingdom	| 1466
+Germany	| 1263
+Spain	| 1202
+Japan	| 768
+Australia	| 672
+Belgium	| 441
+Poland	| 64
+Colombia	| 2
+
+#### *Insights:*
+  - A China é o maior mercado, com 10,664 vendas, seguida pelos Estados Unidos, com 7,248 vendas, e Brasil, com 4,529 vendas.
+  - A Colômbia teve o menor volume de vendas, com apenas 2 unidades.
+    
+
+
+#### ⚪ **Query 12:** Qual é a receita gerada por país?
 *Solução:*
   - Seleciona o país (country) dos usuários.
   - Calcula a soma dos preços de venda (SUM(o.sale_price)) e arredonda para duas casas decimais, nomeando como valor_vendido.
@@ -325,11 +479,31 @@ GROUP BY u.country
 ORDER BY 2 DESC;
 ```
 
+#### *Resultado:*
+country |	valor_vendido
+-- | --
+China	| 310879.54
+United States	| 217926.2
+Brasil	| 135408.77
+South Korea	| 51415.24
+United Kingdom	| 43009.1
+France	| 42392.29
+Germany	| 34501.89
+Spain	| 33583.39
+Japan	| 22726.76
+Australia	| 20434.16
+Belgium	| 11114.38
+Poland	| 1704.73
+
+#### *Insights:*
+  - A China gerou a maior receita, com $310,879.54, correspondendo também ao maior volume de vendas (10,664 unidades).
+  - A Coreia do Sul e o Reino Unido, embora tenham um volume de vendas menor, ainda geraram receitas significativas ($51,415.24 e $43,009.10, respectivamente).
+
 
 ### Análise de Categorias:
 
 
-#### **Query 13:** Qual é a distribuição de vendas por categoria de produto?
+#### ⚪ **Query 13:** Qual é a distribuição de vendas por categoria de produto?
 *Solução:*
   - Seleciona a categoria (category) dos produtos.
   - Conta o número de pedidos (COUNT(*)) e nomeia como vendas.
@@ -350,8 +524,43 @@ WHERE o.status = 'Complete'
 GROUP BY p.category
 ORDER BY 2 DESC;
 ```
+#### *Resultados:*
+category | vendas
+-- | --
+Intimates	| 3458
+Jeans	| 3278
+Tops & Tees |	2973
+Fashion Hoodies & Sweatshirts	| 2932
+Swim	| 2905
+Sweaters	| 2845
+Shorts	| 2844
+Sleep & Lounge	| 2785
+Accessories	| 2489
+Active	| 2331
+Outerwear & Coats |	2276
+Underwear	| 1887
+Pants	| 1829
+Socks |	1513
+Maternity	| 1332
+Dresses	| 1306
+Suits & Sport Coats	| 1302
+Plus	| 1066
+Socks & Hosiery |	947
+Pants & Capris	| 848
+Blazers & Jackets |	799
+Leggings	| 730
+Skirts	| 527
+Suits	| 247
+Jumpsuits & Rompers	| 214
+Clothing Sets |	59
 
-#### **Query 14:** Quais categorias de produtos têm o melhor desempenho em termos de receita?
+#### *Insights:*
+  -  Roupas Íntimas, Jeans e Camisetas e Blusas são as categorias mais populares entre os clientes.
+  -  Ternos, Macacões e Conjuntos são as categorias com o menor volume de vendas.
+
+
+
+#### ⚪ **Query 14:** Quais categorias de produtos têm o melhor desempenho em termos de receita?
 *Solução:*
   - Seleciona a categoria (category) dos produtos e renomeia como categoria.
   - Calcula a soma dos preços de venda (SUM(o.sale_price)) e arredonda para três casas decimais, nomeando como valor_vendas.
@@ -377,5 +586,19 @@ ORDER BY valor_vendas DESC
 
 LIMIT 5;
 ```
+
+#### *Resultado:*
+categoria	| valor_vendas
+-- | --
+Outerwear & Coats	| 338060.89
+Jeans |	326753.06
+Sweaters | 215585.27
+Swim	| 163713.05
+Suits & Sport Coats	| 161992.28
+
+#### *Insights:*
+  - Casacos e Jaquetas, Jeans e Suéteres são as categorias que geraram a maior receita.
+  - Jeans são populares tanto em volume de vendas quanto em receita gerada, já as Roupas Íntimas e Camisetas e Blusas, embora sejam as mais vendidas, não aparecem entre as categorias com maior receita, sugerindo que esses itens têm um preço médio mais baixo.
+  - Casacos e Jaquetas e Suéteres geram alta receita, mas não estão entre as categorias mais vendidas, indicando que esses itens têm um preço médio mais alto.
 
 
