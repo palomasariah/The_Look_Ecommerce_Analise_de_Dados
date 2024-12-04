@@ -223,7 +223,7 @@ total_clientes |
 9945 |
 
 #### *Insights:*
-  - Houve um crescimento de aproximadamente 68.05% no número de clientes em relação ao mesmo perído do ano anterior.
+  - Houve um crescimento de aproximadamente 68.05% no número de clientes em relação ao mesmo período do ano anterior.
 
 
 #### ⚪ **Query 6:** Qual é o valor médio gasto por cliente?
